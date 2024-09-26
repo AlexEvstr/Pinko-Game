@@ -1,12 +1,13 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class ProgressLoader : MonoBehaviour
 {
     public Image progressBar;
-    public float totalLoadTime = 3f;
+    public GameObject _loading;
+    public GameObject _welcome;
+    private float totalLoadTime = 3f;
 
     private float currentTime = 0f;
 
@@ -25,6 +26,7 @@ public class ProgressLoader : MonoBehaviour
             yield return null;
         }
 
-        SceneManager.LoadScene("MenuScreen");
+        _loading.SetActive(false);
+        _welcome.SetActive(true);
     }
 }
