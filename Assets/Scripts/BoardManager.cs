@@ -39,7 +39,7 @@ public class BoardManager : MonoBehaviour
         if (IsWithinBounds(position))
         {
             Transform tile = boardParent.GetChild(position.x * 8 + position.y);
-            return tile.GetComponent<UnityEngine.UI.Image>().color == Color.green; // Проверяем цвет
+            return tile.GetComponent<UnityEngine.UI.Image>().color == new Color(1,0,0.75f,1); // Проверяем цвет
         }
         return false;
     }
@@ -76,24 +76,37 @@ public class BoardManager : MonoBehaviour
         Debug.Log($"Фигура {piece.name} перемещена на {newPosition}");
     }
 
-    // Метод для подсветки возможных ходов
     public void HighlightPossibleMoves(PieceController piece)
     {
         Vector2Int currentPos = piece.currentPosition;
 
         if (piece.isSheep)
         {
-            HighlightTile(currentPos + new Vector2Int(1, 1)); // Diagonal forward right
-            HighlightTile(currentPos + new Vector2Int(-1, 1)); // Diagonal forward left
-            HighlightTile(currentPos + new Vector2Int(1, -1)); // Diagonal backward right
-            HighlightTile(currentPos + new Vector2Int(-1, -1)); // Diagonal backward left
+            HighlightTileIfAvailable(currentPos + new Vector2Int(1, 1)); // Diagonal forward right
+            HighlightTileIfAvailable(currentPos + new Vector2Int(-1, 1)); // Diagonal forward left
+            HighlightTileIfAvailable(currentPos + new Vector2Int(1, -1)); // Diagonal backward right
+            HighlightTileIfAvailable(currentPos + new Vector2Int(-1, -1)); // Diagonal backward left
         }
         else // Для волков
         {
-            HighlightTile(currentPos + new Vector2Int(1, 1)); // Diagonal forward right
-            HighlightTile(currentPos + new Vector2Int(1, -1)); // Diagonal forward left
+            HighlightTileIfAvailable(currentPos + new Vector2Int(1, 1)); // Diagonal forward right
+            HighlightTileIfAvailable(currentPos + new Vector2Int(1, -1)); // Diagonal forward left
         }
     }
+
+    // Метод для подсветки конкретной клетки, если на ней нет других фигур
+    private void HighlightTileIfAvailable(Vector2Int position)
+    {
+        if (IsWithinBounds(position))
+        {
+            // Проверяем, есть ли уже фигура на клетке
+            if (boardParent.GetChild(position.x * 8 + position.y).childCount == 0)
+            {
+                HighlightTile(position); // Подсветить клетку
+            }
+        }
+    }
+
 
 
     // Метод для сброса подсветки
@@ -111,7 +124,7 @@ public class BoardManager : MonoBehaviour
         if (IsWithinBounds(position))
         {
             Transform tile = boardParent.GetChild(position.x * 8 + position.y);
-            tile.GetComponent<UnityEngine.UI.Image>().color = Color.green; // Подсветить клетку
+            tile.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 0, 0.75f, 1); // Подсветить клетку
         }
     }
 }
