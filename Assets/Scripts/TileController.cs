@@ -15,7 +15,6 @@ public class TileController : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         // Сообщаем BoardManager, что клетка была нажата
-        Debug.Log("Клик на клетке с позицией: " + tilePosition); // Для отладки
         boardManager.OnTileClicked(tilePosition);
     }
 }

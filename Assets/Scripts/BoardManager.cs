@@ -4,49 +4,167 @@ public class BoardManager : MonoBehaviour
 {
     private PieceController selectedPiece = null; // Выбранная фигура
     public Transform boardParent; // Родительский объект для клеток доски
+    private GameObject[,] board = new GameObject[8, 8]; // Массив для хранения фигур на доске
+    [SerializeField] private GameObject _winPanel;
+    [SerializeField] private GameObject _losePanel;
 
     // Метод для выбора фигуры
     public void SelectPiece(PieceController piece)
     {
         selectedPiece = piece;
-        Debug.Log("Выбрана фигура: " + piece.name);
         ResetHighlights(); // Сбросить предыдущие подсветки
         HighlightPossibleMoves(piece); // Подсветить возможные ходы
     }
 
+    // Метод для обработки клика по клетке
     // Метод для обработки клика по клетке
     public void OnTileClicked(Vector2Int tilePosition)
     {
         if (selectedPiece != null)
         {
             Debug.Log("Выбрана клетка для перемещения: " + tilePosition);
+
             if (IsMoveValid(tilePosition)) // Проверяем, можно ли переместить
             {
                 MovePiece(selectedPiece, tilePosition);
+
+                // После хода проверяем, не достигла ли овца верха (если ходит овца)
+                if (selectedPiece.isSheep && HasSheepReachedTop(selectedPiece))
+                {
+                    Debug.Log("Win! Овца дошла до верха.");
+                    // Логика для окна Win
+                    return;
+                }
             }
             else
             {
                 Debug.LogError("Невалидный ход!");
             }
+
             ResetHighlights(); // Сбросить подсветки после хода
-            selectedPiece = null; // Сбросить выбранную фигуру
+
+            // Если ходит волк, проверяем, заблокирована ли овца
+            if (!selectedPiece.isSheep && IsSheepBlocked())
+            {
+                Debug.Log("Lose! Овца заблокирована.");
+                // Логика для окна Lose
+            }
+
+            selectedPiece = null; // Сбрасываем выбранную фигуру после хода
         }
     }
 
-    // Метод для проверки валидности хода
+    // Метод для проверки заблокирована ли овца
+    private bool IsSheepBlocked()
+    {
+        PieceController sheep = FindObjectOfType<PieceController>(); // Находим овцу
+        if (sheep == null || !sheep.isSheep)
+        {
+            Debug.LogError("Овца не найдена или объект не является овцой.");
+            return false;
+        }
+
+        Vector2Int currentPos = sheep.currentPosition;
+
+        // Проверяем все 4 диагонали
+        bool topRightBlocked = IsTileBlocked(currentPos + new Vector2Int(1, 1));
+        bool topLeftBlocked = IsTileBlocked(currentPos + new Vector2Int(-1, 1));
+        bool bottomRightBlocked = IsTileBlocked(currentPos + new Vector2Int(1, -1));
+        bool bottomLeftBlocked = IsTileBlocked(currentPos + new Vector2Int(-1, -1));
+
+        // Возвращаем true, если все диагонали заблокированы
+        bool isBlocked = topRightBlocked && topLeftBlocked && bottomRightBlocked && bottomLeftBlocked;
+        Debug.Log($"Овца заблокирована: {isBlocked}");
+        return isBlocked;
+    }
+
+
+
+    private bool IsTileBlocked(Vector2Int position)
+    {
+        if (!IsWithinBounds(position))
+        {
+            Debug.Log($"Клетка {position} находится вне границ доски.");
+            return true; // Стены блокируют
+        }
+
+        Transform tile = boardParent.GetChild(position.x * 8 + position.y);
+        bool isBlocked = tile.childCount > 0; // Проверяем наличие фигуры на клетке
+        Debug.Log($"Проверка клетки {position} на предмет препятствий. Есть фигура: {isBlocked}");
+        return isBlocked;
+    }
+
+
+    private bool IsWithinBounds(Vector2Int position)
+    {
+        return position.x >= 0 && position.x < 8 && position.y >= 0 && position.y < 8;
+    }
+
+
+
+
+
+
+
+
+    // Проверка, достигла ли овца верха
+    private bool HasSheepReachedTop(PieceController piece)
+    {
+        return piece.currentPosition.x == 0; // Если овца находится на верхней строке (0)
+    }
+
+    // Проверка наличия доступных ходов для овцы
+    private bool HasAvailableMoves(PieceController piece)
+    {
+        Vector2Int currentPos = piece.currentPosition;
+
+        // Проверяем доступные ходы (по диагонали)
+        if (piece.isSheep)
+        {
+            if (IsMoveValid(currentPos + new Vector2Int(1, 1)) || // Diagonal forward right
+                IsMoveValid(currentPos + new Vector2Int(-1, 1)) || // Diagonal forward left
+                IsMoveValid(currentPos + new Vector2Int(1, -1)) || // Diagonal backward right
+                IsMoveValid(currentPos + new Vector2Int(-1, -1)))   // Diagonal backward left
+            {
+                return true;
+            }
+        }
+        else // Для волков
+        {
+            if (IsMoveValid(currentPos + new Vector2Int(1, 1)) || // Diagonal forward right
+                IsMoveValid(currentPos + new Vector2Int(1, -1)) // Diagonal forward left
+            )
+            {
+                return true;
+            }
+        }
+        return false; // Если доступных ходов нет
+    }
+
+
+
+
+
     private bool IsMoveValid(Vector2Int position)
     {
         if (IsWithinBounds(position))
         {
             Transform tile = boardParent.GetChild(position.x * 8 + position.y);
-            return tile.GetComponent<UnityEngine.UI.Image>().color == new Color(1,0,0.75f,1); // Проверяем цвет
+
+            // Проверяем наличие других фигур на клетке
+            foreach (Transform child in tile)
+            {
+                if (child.GetComponent<PieceController>() != null)
+                {
+                    return false; // Если на клетке есть фигура, клетка недоступна
+                }
+            }
+
+            // Теперь проверяем, является ли клетка доступной для перемещения
+            return tile.GetComponent<UnityEngine.UI.Image>().color == new Color(1, 0, 0.75f, 1) ||
+                   (tile.GetComponent<UnityEngine.UI.Image>().color == new Color(1, 1, 1, 0)); // Также разрешаем ход на белую клетку, если это допустимо
         }
         return false;
-    }
-
-    private bool IsWithinBounds(Vector2Int position)
-    {
-        return position.x >= 0 && position.x < 8 && position.y >= 0 && position.y < 8;
     }
 
     public void MovePiece(PieceController piece, Vector2Int newPosition)
@@ -68,12 +186,10 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
-        // Получаем новую клетку и перемещаем фигуру
-        Transform newTile = boardParent.GetChild(childIndex);
+        Transform newTile = boardParent.GetChild(newPosition.x * 8 + newPosition.y);
         piece.MoveToTile(newTile); // Передаем новую клетку
         piece.currentPosition = newPosition; // Обновляем текущую позицию фигуры
 
-        Debug.Log($"Фигура {piece.name} перемещена на {newPosition}");
     }
 
     public void HighlightPossibleMoves(PieceController piece)
@@ -106,7 +222,6 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
-
 
 
     // Метод для сброса подсветки
