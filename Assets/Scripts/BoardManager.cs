@@ -22,7 +22,6 @@ public class BoardManager : MonoBehaviour
     {
         if (selectedPiece != null)
         {
-            Debug.Log("Выбрана клетка для перемещения: " + tilePosition);
 
             if (IsMoveValid(tilePosition)) // Проверяем, можно ли переместить
             {
@@ -32,13 +31,10 @@ public class BoardManager : MonoBehaviour
                 if (selectedPiece.isSheep && HasSheepReachedTop(selectedPiece))
                 {
                     Debug.Log("Win! Овца дошла до верха.");
+                    ResetHighlights();
                     // Логика для окна Win
                     return;
                 }
-            }
-            else
-            {
-                Debug.LogError("Невалидный ход!");
             }
 
             ResetHighlights(); // Сбросить подсветки после хода
@@ -53,6 +49,7 @@ public class BoardManager : MonoBehaviour
             selectedPiece = null; // Сбрасываем выбранную фигуру после хода
         }
     }
+
 
     // Метод для проверки заблокирована ли овца
     private bool IsSheepBlocked()
@@ -74,7 +71,6 @@ public class BoardManager : MonoBehaviour
 
         // Возвращаем true, если все диагонали заблокированы
         bool isBlocked = topRightBlocked && topLeftBlocked && bottomRightBlocked && bottomLeftBlocked;
-        Debug.Log($"Овца заблокирована: {isBlocked}");
         return isBlocked;
     }
 
@@ -90,7 +86,6 @@ public class BoardManager : MonoBehaviour
 
         Transform tile = boardParent.GetChild(position.x * 8 + position.y);
         bool isBlocked = tile.childCount > 0; // Проверяем наличие фигуры на клетке
-        Debug.Log($"Проверка клетки {position} на предмет препятствий. Есть фигура: {isBlocked}");
         return isBlocked;
     }
 
@@ -114,32 +109,32 @@ public class BoardManager : MonoBehaviour
     }
 
     // Проверка наличия доступных ходов для овцы
-    private bool HasAvailableMoves(PieceController piece)
-    {
-        Vector2Int currentPos = piece.currentPosition;
+    //private bool HasAvailableMoves(PieceController piece)
+    //{
+    //    Vector2Int currentPos = piece.currentPosition;
 
-        // Проверяем доступные ходы (по диагонали)
-        if (piece.isSheep)
-        {
-            if (IsMoveValid(currentPos + new Vector2Int(1, 1)) || // Diagonal forward right
-                IsMoveValid(currentPos + new Vector2Int(-1, 1)) || // Diagonal forward left
-                IsMoveValid(currentPos + new Vector2Int(1, -1)) || // Diagonal backward right
-                IsMoveValid(currentPos + new Vector2Int(-1, -1)))   // Diagonal backward left
-            {
-                return true;
-            }
-        }
-        else // Для волков
-        {
-            if (IsMoveValid(currentPos + new Vector2Int(1, 1)) || // Diagonal forward right
-                IsMoveValid(currentPos + new Vector2Int(1, -1)) // Diagonal forward left
-            )
-            {
-                return true;
-            }
-        }
-        return false; // Если доступных ходов нет
-    }
+    //    // Проверяем доступные ходы (по диагонали)
+    //    if (piece.isSheep)
+    //    {
+    //        if (IsMoveValid(currentPos + new Vector2Int(1, 1)) || // Diagonal forward right
+    //            IsMoveValid(currentPos + new Vector2Int(-1, 1)) || // Diagonal forward left
+    //            IsMoveValid(currentPos + new Vector2Int(1, -1)) || // Diagonal backward right
+    //            IsMoveValid(currentPos + new Vector2Int(-1, -1)))   // Diagonal backward left
+    //        {
+    //            return true;
+    //        }
+    //    }
+    //    else // Для волков
+    //    {
+    //        if (IsMoveValid(currentPos + new Vector2Int(1, 1)) || // Diagonal forward right
+    //            IsMoveValid(currentPos + new Vector2Int(1, -1)) // Diagonal forward left
+    //        )
+    //        {
+    //            return true;
+    //        }
+    //    }
+    //    return false; // Если доступных ходов нет
+    //}
 
 
 
@@ -160,12 +155,13 @@ public class BoardManager : MonoBehaviour
                 }
             }
 
-            // Теперь проверяем, является ли клетка доступной для перемещения
-            return tile.GetComponent<UnityEngine.UI.Image>().color == new Color(1, 0, 0.75f, 1) ||
-                   (tile.GetComponent<UnityEngine.UI.Image>().color == new Color(1, 1, 1, 0)); // Также разрешаем ход на белую клетку, если это допустимо
+            // Теперь проверяем, является ли клетка доступной для перемещения (должна быть розовая или прозрачная)
+            Color tileColor = tile.GetComponent<UnityEngine.UI.Image>().color;
+            return tileColor == new Color(1, 0, 0.75f, 1); // Проверяем, что клетка подсвечена розовым
         }
         return false;
     }
+
 
     public void MovePiece(PieceController piece, Vector2Int newPosition)
     {
