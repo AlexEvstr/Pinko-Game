@@ -12983,6 +12983,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSound: {fileID: 8300000, guid: 9a27642ae1e614064897a86352c8a2cc, type: 3}
   _tapOnPieceSound: {fileID: 8300000, guid: 46f4d313070df43dda256674bb6c1778, type: 3}
+  _loseSound: {fileID: 8300000, guid: c2a656c4a55e34c0497a032900da15d5, type: 3}
+  _winSound: {fileID: 8300000, guid: f2219c4bd740d492283bc050bd4f1390, type: 3}
 --- !u!1 &1939910441
 GameObject:
   m_ObjectHideFlags: 0
@@ -13315,6 +13317,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _losePanel: {fileID: 1952598565}
   _winPanel: {fileID: 1063516863}
+  _gameSoundManager: {fileID: 1935618410}
 --- !u!114 &1983553354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14684,7 +14687,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: c2a9492320de64cfbb45f08867d17753, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

@@ -22,6 +22,7 @@ public class ComputerPlayer : MonoBehaviour
     private HashSet<Vector2Int> previousMoves = new HashSet<Vector2Int>();
     [SerializeField] private GameObject _losePanel;
     [SerializeField] private GameObject _winPanel;
+    [SerializeField] private GameSoundManager _gameSoundManager;
 
     private void Start()
     {
@@ -104,12 +105,14 @@ public class ComputerPlayer : MonoBehaviour
         level++;
         PlayerPrefs.SetInt("CurrentLevel", level);
         _winPanel.SetActive(true);
+        _gameSoundManager.PlayWinSound();
     }
 
     private IEnumerator ShowLose()
     {
         yield return new WaitForSeconds(0.5f);
         _losePanel.SetActive(true);
+        _gameSoundManager.PlayLoseSound();
     }
 
     private float EvaluateMoveForSheep(Vector2Int move, PieceController sheep)

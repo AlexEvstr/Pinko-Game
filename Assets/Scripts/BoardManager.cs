@@ -374,6 +374,7 @@ public class BoardManager : MonoBehaviour
     private IEnumerator WaitForWin()
     {
         yield return new WaitForSeconds(0.5f);
+        gameSoundManager.PlayWinSound();
         _winPanel.SetActive(true);
     }
 
@@ -385,6 +386,7 @@ public class BoardManager : MonoBehaviour
     private IEnumerator WaitForLose()
     {
         yield return new WaitForSeconds(0.5f);
+        gameSoundManager.PlayLoseSound();
         _losePanel.SetActive(true);
     }
 
