@@ -10184,6 +10184,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _losePanel: {fileID: 1952598565}
+  _winPanel: {fileID: 1063516863}
 --- !u!1 &1989054045
 GameObject:
   m_ObjectHideFlags: 0

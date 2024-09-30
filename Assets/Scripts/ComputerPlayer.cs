@@ -20,6 +20,7 @@ public class ComputerPlayer : MonoBehaviour
     private BoardManager boardManager;
     private HashSet<Vector2Int> previousMoves = new HashSet<Vector2Int>();
     [SerializeField] private GameObject _losePanel;
+    [SerializeField] private GameObject _winPanel;
 
     private void Start()
     {
@@ -89,12 +90,14 @@ public class ComputerPlayer : MonoBehaviour
 
             if (boardManager.HasSheepReachedTop(sheep))
             {
-                Debug.Log("Овца достигла верхней части доски. Победа овцы.");
+                Debug.Log("2");
+                _losePanel.SetActive(true);
             }
         }
         else
         {
-            Debug.LogWarning("Овца не нашла безопасного хода.");
+            Debug.Log("1");
+            _winPanel.SetActive(true);
         }
 
         boardManager.ResetHighlights();

@@ -235,7 +235,8 @@ public class BoardManager : MonoBehaviour
 
         if (IsSheepBlocked())
         {
-            ShowLosePanel();
+            Debug.Log("11");
+            //ShowLosePanel();
             gameOver = true;
         }
 
