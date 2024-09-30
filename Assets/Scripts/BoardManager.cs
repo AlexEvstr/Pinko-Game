@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject _selectionPanel;
     [SerializeField] private GameSoundManager gameSoundManager;
     private LevelAndScoreController _levelAndScoreController;
+    private OptionsController _optionsController;
     public bool playerIsSheep;
     public bool computerPlaysForSheep;
     public List<Vector2Int> sheepMoveHistory = new List<Vector2Int>();
@@ -27,6 +29,7 @@ public class BoardManager : MonoBehaviour
         computerPlayer = FindObjectOfType<ComputerPlayer>();
         gameManager = FindObjectOfType<GameManager>();
         _levelAndScoreController = GetComponent<LevelAndScoreController>();
+        _optionsController = GetComponent<OptionsController>();
 
         string choosePanel = PlayerPrefs.GetString("ShouldShowChoosePanel", "yes");
         if (choosePanel == "Sheep") OnSheepSelected();
@@ -79,6 +82,7 @@ public class BoardManager : MonoBehaviour
         if (IsWithinBounds(position))
         {
             gameSoundManager.TapOnPieceSound();
+            _optionsController.TryLightHaptic();
             Transform tile = boardParent.GetChild(position.x * 8 + position.y);
             var tileImage = tile.GetComponent<UnityEngine.UI.Image>();
 
@@ -86,18 +90,8 @@ public class BoardManager : MonoBehaviour
             {
                 tileImage.color = new Color(1, 0, 0.75f, 1); // Подсвечиваем клетку розовым цветом
             }
-            else
-            {
-                Debug.LogWarning($"Клетка {position} не содержит компонента Image для подсветки.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"Позиция {position} вне границ доски.");
         }
     }
-
-
 
     public List<Vector2Int> GetHighlightedTiles(PieceController piece)
     {
@@ -181,7 +175,7 @@ public class BoardManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Невалидный ход!");
+            _optionsController.TryErrorHaptic();
         }
     }
 
@@ -198,19 +192,16 @@ public class BoardManager : MonoBehaviour
     {
         if (!IsWithinBounds(targetPos))
         {
-            Debug.Log($"Клетка {targetPos} вне границ доски.");
             return false;
         }
 
         if (IsPositionOccupied(targetPos))
         {
-            Debug.Log($"Клетка {targetPos} занята.");
             return false;
         }
 
         if (!IsDiagonalMove(currentPos, targetPos))
         {
-            Debug.Log($"Ход {currentPos} -> {targetPos} не является диагональным.");
             return false;
         }
 
@@ -218,15 +209,12 @@ public class BoardManager : MonoBehaviour
         {
             if (targetPos.x <= currentPos.x)
             {
-                Debug.Log("Волк не может двигаться назад.");
                 return false;
             }
         }
 
         return true;
     }
-
-
 
     private void InvokeComputerMove()
     {
@@ -301,13 +289,40 @@ public class BoardManager : MonoBehaviour
     {
         if (!IsWithinBounds(newPosition))
         {
-            Debug.LogError($"Позиция {newPosition} выходит за пределы доски.");
             return;
         }
+
         Transform newTile = boardParent.GetChild(newPosition.x * 8 + newPosition.y);
-        piece.MoveToTile(newTile);
+        StartCoroutine(SmoothMove(piece, newTile)); // Запускаем плавное перемещение
         piece.currentPosition = newPosition;
     }
+
+    private IEnumerator SmoothMove(PieceController piece, Transform newTile)
+    {
+        Vector3 startPosition = piece.transform.position;
+        Vector3 endPosition = newTile.position;
+
+        float moveDuration = 0.15f;
+        float elapsedTime = 0f;
+
+        gameSoundManager.PlayMoveSound();
+        _optionsController.TryLightHaptic();
+
+        while (elapsedTime < moveDuration)
+        {
+            piece.transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / moveDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        piece.transform.position = endPosition;
+
+        piece.transform.SetParent(newTile);
+        piece.transform.localPosition = Vector3.zero;
+
+        piece.currentPosition = newTile.GetComponent<TileController>().tilePosition;
+    }
+
 
     public void ResetHighlights()
     {
@@ -348,11 +363,23 @@ public class BoardManager : MonoBehaviour
 
     public void ShowWinPanel()
     {
+        StartCoroutine(WaitForWin());
+    }
+
+    private IEnumerator WaitForWin()
+    {
+        yield return new WaitForSeconds(0.5f);
         _winPanel.SetActive(true);
     }
 
     public void ShowLosePanel()
     {
+        StartCoroutine(WaitForLose());
+    }
+
+    private IEnumerator WaitForLose()
+    {
+        yield return new WaitForSeconds(0.5f);
         _losePanel.SetActive(true);
     }
 

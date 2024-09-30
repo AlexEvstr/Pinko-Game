@@ -12,6 +12,9 @@ public class HapticFeedbackManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void TriggerHeavyHaptic();
 
+    [DllImport("__Internal")]
+    private static extern void TriggerErrorHaptic();
+
     public void LightHaptic()
     {
         if (Application.platform == RuntimePlatform.IPhonePlayer)
@@ -33,6 +36,14 @@ public class HapticFeedbackManager : MonoBehaviour
         if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
             TriggerHeavyHaptic();
+        }
+    }
+
+    public void ErrorHaptic()
+    {
+        if (Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            TriggerErrorHaptic();
         }
     }
 }

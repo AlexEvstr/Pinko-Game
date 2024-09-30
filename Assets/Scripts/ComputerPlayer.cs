@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -68,10 +69,6 @@ public class ComputerPlayer : MonoBehaviour
 
                 Invoke(nameof(PerformWolfMove), 0.5f);
             }
-            else
-            {
-                Debug.LogWarning("Нет доступных ходов для волка.");
-            }
         }
     }
 
@@ -89,20 +86,31 @@ public class ComputerPlayer : MonoBehaviour
 
             if (boardManager.HasSheepReachedTop(sheep))
             {
-                _losePanel.SetActive(true);
+                StartCoroutine(ShowLose());
             }
         }
         else
         {
-            _winPanel.SetActive(true);
-            int level = PlayerPrefs.GetInt("CurrentLevel", 1);
-            level++;
-            PlayerPrefs.SetInt("CurrentLevel", level);
+            StartCoroutine(ShowWin());     
         }
 
         boardManager.ResetHighlights();
     }
 
+    private IEnumerator ShowWin()
+    {
+        yield return new WaitForSeconds(0.5f);
+        int level = PlayerPrefs.GetInt("CurrentLevel", 1);
+        level++;
+        PlayerPrefs.SetInt("CurrentLevel", level);
+        _winPanel.SetActive(true);
+    }
+
+    private IEnumerator ShowLose()
+    {
+        yield return new WaitForSeconds(0.5f);
+        _losePanel.SetActive(true);
+    }
 
     private float EvaluateMoveForSheep(Vector2Int move, PieceController sheep)
     {

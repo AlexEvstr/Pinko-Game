@@ -56,7 +56,6 @@ public class GameManager : MonoBehaviour
         {
             Vector2Int move = availableMoves[Random.Range(0, availableMoves.Count)];
             boardManager.MovePiece(sheep, move);
-            Debug.Log($"Компьютер сделал ход овцой на позицию {move}");
         }
     }
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class LevelAndScoreController : MonoBehaviour
 {
@@ -22,19 +23,23 @@ public class LevelAndScoreController : MonoBehaviour
 
     public void Plus5Score()
     {
-        _totalScore += 5;
-        _winScoreText.text = _totalScore.ToString();
-        _loseScoreText.text = _totalScore.ToString();
-        _totalScoreText.text = _totalScore.ToString();
-        PlayerPrefs.SetInt("TotalScore", _totalScore);
+        StartCoroutine(WaitTOChangeSize(5));
     }
 
     public void Plus10Score()
     {
-        _totalScore += 10;
+        StartCoroutine(WaitTOChangeSize(10));
+    }
+
+    private IEnumerator WaitTOChangeSize(int scorePlus)
+    {
+        _totalScoreText.transform.localScale = new Vector2(1.2f, 1.2f);
+        _totalScore += scorePlus;
         _winScoreText.text = _totalScore.ToString();
         _loseScoreText.text = _totalScore.ToString();
         _totalScoreText.text = _totalScore.ToString();
         PlayerPrefs.SetInt("TotalScore", _totalScore);
+        yield return new WaitForSeconds(0.15f);
+        _totalScoreText.transform.localScale = new Vector2(1f, 1f);
     }
 }

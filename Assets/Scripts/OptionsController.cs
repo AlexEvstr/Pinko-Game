@@ -129,4 +129,9 @@ public class OptionsController : MonoBehaviour
     {
         if (_vibration == 1) _hapticFeedbackManager.HeavyHaptic();
     }
+
+    public void TryErrorHaptic()
+    {
+        if (_vibration == 1) _hapticFeedbackManager.ErrorHaptic();
+    }
 }

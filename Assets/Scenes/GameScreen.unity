@@ -2023,6 +2023,7 @@ MonoBehaviour:
   currentPosition: {x: 7, y: 3}
   isSheep: 1
   gameSoundManager: {fileID: 1935618410}
+  _optionsController: {fileID: 1983553354}
 --- !u!1 &442491165
 GameObject:
   m_ObjectHideFlags: 0
@@ -5851,6 +5852,7 @@ MonoBehaviour:
   currentPosition: {x: 0, y: 6}
   isSheep: 0
   gameSoundManager: {fileID: 1935618410}
+  _optionsController: {fileID: 1983553354}
 --- !u!1 &1084744620
 GameObject:
   m_ObjectHideFlags: 0
@@ -8258,6 +8260,7 @@ MonoBehaviour:
   currentPosition: {x: 0, y: 4}
   isSheep: 0
   gameSoundManager: {fileID: 1935618410}
+  _optionsController: {fileID: 1983553354}
 --- !u!1 &1408224283
 GameObject:
   m_ObjectHideFlags: 0
@@ -11051,6 +11054,7 @@ MonoBehaviour:
   currentPosition: {x: 0, y: 2}
   isSheep: 0
   gameSoundManager: {fileID: 1935618410}
+  _optionsController: {fileID: 1983553354}
 --- !u!1 &1799412978
 GameObject:
   m_ObjectHideFlags: 0
@@ -13959,6 +13963,7 @@ MonoBehaviour:
   currentPosition: {x: 0, y: 0}
   isSheep: 0
   gameSoundManager: {fileID: 1935618410}
+  _optionsController: {fileID: 1983553354}
 --- !u!1 &2118876794
 GameObject:
   m_ObjectHideFlags: 0

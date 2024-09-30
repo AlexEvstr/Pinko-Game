@@ -6,6 +6,8 @@ public class PieceController : MonoBehaviour, IPointerClickHandler
     public Vector2Int currentPosition;
     public bool isSheep;
     [SerializeField] private GameSoundManager gameSoundManager;
+    [SerializeField] private OptionsController _optionsController;
+
 
     private BoardManager boardManager;
 
@@ -22,10 +24,11 @@ public class PieceController : MonoBehaviour, IPointerClickHandler
     public void MoveToTile(Transform newTile)
     {
         gameSoundManager.PlayMoveSound();
+        _optionsController.TryLightHaptic();
         transform.SetParent(newTile);
 
         transform.localPosition = Vector3.zero;
 
-        currentPosition = newTile.GetComponent<TileController>().tilePosition; // Обновляем позицию на основе нового родителя
+        currentPosition = newTile.GetComponent<TileController>().tilePosition;
     }
 }
