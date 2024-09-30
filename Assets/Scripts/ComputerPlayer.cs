@@ -18,7 +18,8 @@ public class Node
 public class ComputerPlayer : MonoBehaviour
 {
     private BoardManager boardManager;
-    private HashSet<Vector2Int> previousMoves = new HashSet<Vector2Int>(); // Запоминаем предыдущие ходы
+    private HashSet<Vector2Int> previousMoves = new HashSet<Vector2Int>();
+    [SerializeField] private GameObject _losePanel;
 
     private void Start()
     {
@@ -40,14 +41,13 @@ public class ComputerPlayer : MonoBehaviour
         }
         else
         {
-            selectedWolf = null;  // Волк, который сделает лучший ход
+            selectedWolf = null;
             bestWolfMove = Vector2Int.zero;
             float bestScore = float.MinValue;
 
-            // Оцениваем ходы всех волков и выбираем лучшего
             foreach (PieceController wolf in boardManager.GetWolves())
             {
-                List<Vector2Int> possibleMoves = boardManager.GetHighlightedTiles(wolf); // Получаем доступные ходы для текущего волка
+                List<Vector2Int> possibleMoves = boardManager.GetHighlightedTiles(wolf);
 
                 foreach (Vector2Int move in possibleMoves)
                 {
@@ -63,10 +63,8 @@ public class ComputerPlayer : MonoBehaviour
 
             if (selectedWolf != null && bestWolfMove != selectedWolf.currentPosition)
             {
-                // Подсвечиваем возможные ходы выбранного волка
                 boardManager.HighlightPossibleMoves(selectedWolf);
 
-                // Используем Invoke для вызова метода через строку
                 Invoke(nameof(PerformWolfMove), 0.5f);
             }
             else
@@ -82,7 +80,6 @@ public class ComputerPlayer : MonoBehaviour
         PieceController sheep = boardManager.GetSheep();
         Vector2Int sheepPosition = sheep.currentPosition;
 
-        // Используем новый метод для расчета безопасного хода
         Vector2Int bestMove = CalculateSafeMoveForSheep(sheep);
 
         if (bestMove != sheepPosition)
@@ -108,69 +105,61 @@ public class ComputerPlayer : MonoBehaviour
     {
         float score = 0f;
 
-        // Приоритет движения наверх, если путь не заблокирован
         if (move.x < sheep.currentPosition.x && !IsTopPathBlocked(move))
         {
-            score += 1000f;  // Большой бонус за движение наверх
+            score += 1000f;
         }
         else if (IsTopPathBlocked(move))
         {
-            score -= 200f;  // Штраф за заблокированный путь наверх
+            score -= 200f;
             score += EvaluateProximityToFreedom(move, sheep);
         }
 
-        // Проверка расстояния до ближайшего волка
         float minDistanceToWolf = GetDistanceToClosestWolf(move);
         if (minDistanceToWolf <= 2f && !WillSheepBeTrapped(move))
         {
-            score += 300f;  // Бонус за агрессивное движение к волкам, если это безопасно
+            score += 300f;
         }
 
-        // Проверка на возможность выхода из тупика через несколько ходов
         if (WillSheepBeTrapped(move))
         {
-            score -= 500f;  // Штраф за тупик
+            score -= 500f;
         }
         else
         {
-            score += 200f;  // Бонус за безопасный ход
+            score += 200f;
         }
 
         return score;
     }
 
-    // Оценка безопасности хода овцы с учётом нескольких шагов вперёд
     private bool WillSheepBeTrapped(Vector2Int move)
     {
-        // Получаем все возможные будущие ходы овцы после текущего перемещения
         List<Vector2Int> futureMoves = boardManager.GetHighlightedTiles(boardManager.GetSheep());
 
-        // Проверяем несколько ходов вперёд, чтобы понять, не загонит ли овца себя в угол
         for (int i = 0; i < futureMoves.Count; i++)
         {
             Vector2Int futureMove = futureMoves[i];
             if (!IsMoveLeadingToTrap(futureMove))
             {
-                return false;  // Если есть хотя бы один безопасный ход, овца не будет загнана в угол
+                return false;
             }
         }
 
-        return true;  // Если все возможные ходы ведут в тупик, овца будет окружена
+        return true;
     }
 
-    // Проверяем, приведет ли ход к окружению со стороны волков
     private bool IsMoveLeadingToTrap(Vector2Int futureMove)
     {
         foreach (var wolf in boardManager.GetWolves())
         {
-            // Если волки могут окружить овцу через 1-2 хода
             if (Vector2Int.Distance(wolf.currentPosition, futureMove) <= 2f)
             {
-                return true;  // Ход приведет к блокировке
+                return true;
             }
         }
 
-        return false;  // Ход безопасен
+        return false;
     }
 
 
@@ -188,14 +177,13 @@ public class ComputerPlayer : MonoBehaviour
             if (IsWithinBoundsAndFree(checkPosition))
             {
                 foundFreedom = true;
-                score += 300f;  // Бонус за нахождение свободы
+                score += 300f;
             }
         }
 
-        // Если все направления заблокированы, минимизируем потери
         if (!foundFreedom)
         {
-            score -= 300f;  // Штраф за тупик
+            score -= 300f;
         }
 
         return score;
@@ -203,22 +191,19 @@ public class ComputerPlayer : MonoBehaviour
 
 
 
-    // Метод для проверки заблокирован ли путь наверх
     private bool IsTopPathBlocked(Vector2Int move)
     {
-        // Проверяем несколько клеток наверху на наличие волков
         for (int x = move.x - 1; x >= 0; x--)
         {
             if (boardManager.IsPositionOccupied(new Vector2Int(x, move.y)))
             {
-                return true;  // Если на пути есть волк, путь заблокирован
+                return true;
             }
         }
         return false;
     }
 
 
-    // Метод для оценки, есть ли рядом волк
     private bool IsWolfNearby(Vector2Int move)
     {
         foreach (var wolf in boardManager.GetWolves())
@@ -231,35 +216,30 @@ public class ComputerPlayer : MonoBehaviour
         return false;
     }
 
-
-    // Проверка, свободна ли клетка в определённой позиции
     private bool IsWithinBoundsAndFree(Vector2Int position)
     {
         return boardManager.IsWithinBounds(position) && !boardManager.IsPositionOccupied(position);
     }
 
-    // Получение возможных направлений движения
     private List<Vector2Int> GetPossibleDirections()
     {
         return new List<Vector2Int>
     {
-        new Vector2Int(-1, -1), // Вверх влево
-        new Vector2Int(-1, 1),  // Вверх вправо
-        new Vector2Int(1, -1),  // Вниз влево
-        new Vector2Int(1, 1)    // Вниз вправо
+        new Vector2Int(-1, -1),
+        new Vector2Int(-1, 1),
+        new Vector2Int(1, -1),
+        new Vector2Int(1, 1)
     };
     }
-
 
 
     private bool IsPathBlockedByWolves(Vector2Int move)
     {
         foreach (var wolf in boardManager.GetWolves())
         {
-            // Если волки блокируют движение по прямой вперед
             if (Mathf.Abs(wolf.currentPosition.x - move.x) <= 1 && Mathf.Abs(wolf.currentPosition.y - move.y) <= 1)
             {
-                return true; // Путь заблокирован волками
+                return true;
             }
         }
         return false;
@@ -267,12 +247,10 @@ public class ComputerPlayer : MonoBehaviour
 
     private bool CanMoveLeftOrDown(PieceController sheep)
     {
-        // Проверяем, есть ли возможность для движения влево или вниз
         Vector2Int currentPos = sheep.currentPosition;
-        Vector2Int leftMove = currentPos + new Vector2Int(-1, 0); // Влево
-        Vector2Int downMove = currentPos + new Vector2Int(0, -1); // Вниз
+        Vector2Int leftMove = currentPos + new Vector2Int(-1, 0);
+        Vector2Int downMove = currentPos + new Vector2Int(0, -1);
 
-        // Возвращаем true, если хотя бы одно из этих направлений доступно
         return boardManager.IsMoveValid(currentPos, leftMove, true) || boardManager.IsMoveValid(currentPos, downMove, true);
 
     }
@@ -285,39 +263,34 @@ public class ComputerPlayer : MonoBehaviour
 
         foreach (var move in possibleMoves)
         {
-            if (boardManager.IsDiagonalMove(sheep.currentPosition, move)) // Проверяем только диагональные ходы
+            if (boardManager.IsDiagonalMove(sheep.currentPosition, move))
             {
                 float moveScore = 0f;
 
-                // Проверяем, находится ли овца на границе игрового поля
                 if (!boardManager.IsWithinBounds(move))
                 {
-                    moveScore -= 200f;  // Штраф за попытку уйти за границы поля
+                    moveScore -= 200f;
                 }
 
-                // Овца должна двигаться наверх, если путь свободен
                 if (move.x < sheep.currentPosition.x && !IsTopPathBlocked(move))
                 {
-                    moveScore += 300f;  // Преимущество за движение наверх
+                    moveScore += 300f;
                 }
 
-                // Если на пути тупик или граница, штрафуем
                 if (WillSheepBeTrapped(move))
                 {
-                    moveScore -= 100f;  // Штраф за потенциальный тупик
+                    moveScore -= 100f;
                 }
 
-                // Овца должна быть смелой и обходить волков
                 float minDistanceToWolf = GetDistanceToClosestWolf(move);
                 if (minDistanceToWolf <= 2f)
                 {
-                    moveScore += 50f;  // Награда за движение ближе к волкам, если это даёт выход
+                    moveScore += 50f;
                 }
 
-                // Проверка на углы. Если овца движется в угол, штрафуем
                 if (IsMoveTowardsCorner(move))
                 {
-                    moveScore -= 150f;  // Штраф за движение к углам
+                    moveScore -= 150f;
                 }
 
                 if (moveScore > bestScore)
@@ -333,19 +306,14 @@ public class ComputerPlayer : MonoBehaviour
 
     private bool IsMoveTowardsCorner(Vector2Int move)
     {
-        // Проверяем, находится ли клетка в углу
         return (move.x == 0 || move.x == boardManager.boardSize - 1) &&
                (move.y == 0 || move.y == boardManager.boardSize - 1);
     }
-
-
-
 
     private float GetDistanceToClosestWolf(Vector2Int sheepPosition)
     {
         float minDistance = float.MaxValue;
 
-        // Получаем всех волков с доски
         foreach (var wolf in boardManager.GetWolves())
         {
             float distance = Vector2Int.Distance(sheepPosition, wolf.currentPosition);
@@ -363,37 +331,43 @@ public class ComputerPlayer : MonoBehaviour
         if (selectedWolf != null && bestWolfMove != selectedWolf.currentPosition)
         {
             boardManager.MovePiece(selectedWolf, bestWolfMove);
-            Debug.Log($"Волк переместился на {bestWolfMove}");
+
+            // Проверяем, заблокирована ли овца
+            if (IsSheepBlocked(boardManager.GetSheep()))
+            {
+                _losePanel.SetActive(true);
+            }
         }
 
         boardManager.ResetHighlights();
     }
 
+    // Метод для проверки, заблокирована ли овца
+    private bool IsSheepBlocked(PieceController sheep)
+    {
+        List<Vector2Int> sheepMoves = boardManager.GetHighlightedTiles(sheep);
 
-
-
+        // Если нет доступных ходов для овцы, то она заблокирована
+        return sheepMoves.Count == 0;
+    }
 
 
     private Vector2Int CalculateBestMoveForWolf(PieceController wolf, PieceController sheep)
     {
         List<Vector2Int> possibleMoves = boardManager.GetHighlightedTiles(wolf);
 
-        // Если нет доступных ходов, возвращаем текущую позицию
         if (possibleMoves.Count == 0)
         {
-            Debug.LogWarning("Нет доступных ходов для волка.");
             return wolf.currentPosition;
         }
 
-        Vector2Int bestMove = possibleMoves[0];  // По умолчанию первый ход
+        Vector2Int bestMove = possibleMoves[0];
         float bestScore = float.MinValue;
 
-        // Проверяем все возможные ходы
         foreach (var move in possibleMoves)
         {
             float score = EvaluateMoveForWolf(move, sheep);
 
-            // Проверяем наилучший ход, даже если оценка отрицательная
             if (score > bestScore || bestScore == float.MinValue)
             {
                 bestScore = score;
@@ -401,18 +375,13 @@ public class ComputerPlayer : MonoBehaviour
             }
         }
 
-        // Если ни один ход не лучше текущего, выбираем первый доступный
         if (bestMove == wolf.currentPosition && possibleMoves.Count > 0)
         {
-            bestMove = possibleMoves[0];  // Выбираем первый доступный ход
-            Debug.Log("Не нашлось лучшего хода, выбран первый доступный ход.");
+            bestMove = possibleMoves[0];
         }
 
-        Debug.Log($"Лучший ход для волка: {bestMove} с оценкой: {bestScore}");
         return bestMove;
     }
-
-
 
     private float EvaluateMoveForWolf(Vector2Int wolfMove, PieceController sheep)
     {
@@ -430,6 +399,4 @@ public class ComputerPlayer : MonoBehaviour
 
         return score;
     }
-
-
 }

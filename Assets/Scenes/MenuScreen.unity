@@ -5328,6 +5328,7 @@ MonoBehaviour:
   progressBar: {fileID: 881136855}
   _loading: {fileID: 402306414}
   _welcome: {fileID: 897008453}
+  _menu: {fileID: 2138698618}
 --- !u!114 &2051775553
 MonoBehaviour:
   m_ObjectHideFlags: 0

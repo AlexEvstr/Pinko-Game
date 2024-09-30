@@ -7,14 +7,26 @@ public class ProgressLoader : MonoBehaviour
     public Image progressBar;
     public GameObject _loading;
     public GameObject _welcome;
+    public GameObject _menu;
     private float totalLoadTime = 3f;
 
     private float currentTime = 0f;
 
     void Awake()
     {
-        progressBar.fillAmount = 0f;
-        StartCoroutine(FillProgressBar());
+        string loadAndWelcome = PlayerPrefs.GetString("ShouldShowLoadAndWelcome", "yes");
+        if (loadAndWelcome != "yes")
+        {
+            _loading.SetActive(false);
+            _welcome.SetActive(false);
+            _menu.SetActive(true);
+        }
+        else
+        {
+            progressBar.fillAmount = 0f;
+            StartCoroutine(FillProgressBar());
+        }
+        PlayerPrefs.SetString("ShouldShowLoadAndWelcome", "yes");
     }
 
     IEnumerator FillProgressBar()

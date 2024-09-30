@@ -15,6 +15,7 @@ public class MenuButtons : MonoBehaviour
     private void Start()
     {
         _optionsController = GetComponent<OptionsController>();
+        PlayerPrefs.SetString("ShouldShowChoosePanel", "yes");
     }
 
     public void CloseWelcome()

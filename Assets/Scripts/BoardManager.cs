@@ -24,6 +24,10 @@ public class BoardManager : MonoBehaviour
     {
         computerPlayer = FindObjectOfType<ComputerPlayer>();
         gameManager = FindObjectOfType<GameManager>();
+
+        string choosePanel = PlayerPrefs.GetString("ShouldShowChoosePanel", "yes");
+        if (choosePanel == "Sheep") OnSheepSelected();
+        else if (choosePanel == "Wolf") OnWolvesSelected();
     }
 
     public void SelectPiece(PieceController piece)
@@ -111,8 +115,6 @@ public class BoardManager : MonoBehaviour
             CheckAndAddTile(currentPos + new Vector2Int(1, -1), highlightedTiles);
         }
 
-        Debug.Log("Возможные ходы для " + (piece.isSheep ? "овцы" : "волка") + ": " + string.Join(", ", highlightedTiles));
-
         return highlightedTiles;
     }
 
@@ -147,10 +149,6 @@ public class BoardManager : MonoBehaviour
             {
                 highlightedTiles.Add(position);
             }
-            else
-            {
-                Debug.Log($"Клетка {position} занята.");
-            }
         }
     }
 
@@ -166,7 +164,6 @@ public class BoardManager : MonoBehaviour
 
             if (selectedPiece.isSheep && HasSheepReachedTop(selectedPiece))
             {
-                Debug.Log("Овца дошла до верха. Победа!");
                 ShowWinPanel();
                 gameOver = true;
                 return;
@@ -230,13 +227,14 @@ public class BoardManager : MonoBehaviour
 
     private void InvokeComputerMove()
     {
-        if (gameOver) return;
-
+        if (gameOver)
+        {
+            return;
+        }
         computerPlayer.MakeComputerMove();
 
         if (IsSheepBlocked())
         {
-            Debug.Log("Lose! Овца заблокирована.");
             ShowLosePanel();
             gameOver = true;
         }
@@ -308,7 +306,6 @@ public class BoardManager : MonoBehaviour
         Transform newTile = boardParent.GetChild(newPosition.x * 8 + newPosition.y);
         piece.MoveToTile(newTile);
         piece.currentPosition = newPosition;
-        Debug.Log("Позиция овцы обновлена: " + newPosition);
     }
 
     public void ResetHighlights()
@@ -369,7 +366,7 @@ public class BoardManager : MonoBehaviour
         {
             DisableOneWolf();
         }
-
+        PlayerPrefs.SetString("ShouldShowChoosePanel", "Sheep");
         HideSelectionPanel(); // Закрываем панель с выбором
     }
 
@@ -385,7 +382,7 @@ public class BoardManager : MonoBehaviour
         {
             DisableOneWolf();
         }
-
+        PlayerPrefs.SetString("ShouldShowChoosePanel", "Wolf");
         HideSelectionPanel(); // Закрываем панель с выбором
     }
 

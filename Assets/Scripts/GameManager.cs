@@ -1,15 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     private BoardManager boardManager;
     private bool isPlayerTurn = true; // Если игрок ходит за овцу, то его ход начинается первым
-    private int currentWolfIndex = 0; // Индекс для отслеживания текущего волка
+    private int currentWolfIndex = 0;
+    // Индекс для отслеживания текущего волка
 
     private void Start()
     {
         boardManager = FindObjectOfType<BoardManager>();
+        PlayerPrefs.SetString("ShouldShowLoadAndWelcome", "no");
     }
 
     // Метод для выполнения хода компьютера (волков или овцы)
@@ -59,7 +62,6 @@ public class GameManager : MonoBehaviour
         {
             Vector2Int move = availableMoves[Random.Range(0, availableMoves.Count)];
             boardManager.MovePiece(currentWolf, move);
-            Debug.Log($"Компьютер сделал ход волком {currentWolf.name} на позицию {move}");
         }
 
         // Обновляем индекс волка для следующего хода
@@ -77,5 +79,15 @@ public class GameManager : MonoBehaviour
             // После хода игрока передаем ход компьютеру
             Invoke(nameof(ExecuteComputerTurn), 1f); // Добавим небольшую задержку для хода компьютера
         }
+    }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("MenuScreen");
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
