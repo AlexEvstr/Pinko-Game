@@ -291,9 +291,11 @@ public class BoardManager : MonoBehaviour
         {
             return;
         }
-
+        
         Transform newTile = boardParent.GetChild(newPosition.x * 8 + newPosition.y);
         StartCoroutine(SmoothMove(piece, newTile)); // Запускаем плавное перемещение
+
+
         piece.currentPosition = newPosition;
     }
 
@@ -302,7 +304,7 @@ public class BoardManager : MonoBehaviour
         Vector3 startPosition = piece.transform.position;
         Vector3 endPosition = newTile.position;
 
-        float moveDuration = 0.15f;
+        float moveDuration = 0.25f;
         float elapsedTime = 0f;
 
         gameSoundManager.PlayMoveSound();
@@ -310,10 +312,12 @@ public class BoardManager : MonoBehaviour
 
         while (elapsedTime < moveDuration)
         {
+            piece.transform.GetChild(0).gameObject.SetActive(true);
             piece.transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / moveDuration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+        
 
         piece.transform.position = endPosition;
 
@@ -321,6 +325,7 @@ public class BoardManager : MonoBehaviour
         piece.transform.localPosition = Vector3.zero;
 
         piece.currentPosition = newTile.GetComponent<TileController>().tilePosition;
+        piece.transform.GetChild(0).gameObject.SetActive(false);
     }
 
 
