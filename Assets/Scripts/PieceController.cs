@@ -5,6 +5,7 @@ public class PieceController : MonoBehaviour, IPointerClickHandler
 {
     public Vector2Int currentPosition; // Текущая позиция фигуры
     public bool isSheep; // Это овца или волк?
+    [SerializeField] private GameSoundManager gameSoundManager;
 
     private BoardManager boardManager;
 
@@ -20,6 +21,7 @@ public class PieceController : MonoBehaviour, IPointerClickHandler
 
     public void MoveToTile(Transform newTile)
     {
+        gameSoundManager.PlayMoveSound();
         // Меняем родителя на новую клетку
         transform.SetParent(newTile);
 

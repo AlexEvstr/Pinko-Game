@@ -9,6 +9,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject _winPanel;
     [SerializeField] private GameObject _losePanel;
     [SerializeField] private GameObject _selectionPanel;
+    [SerializeField] private GameSoundManager gameSoundManager;
     public bool playerIsSheep;
     public bool computerPlaysForSheep;
     public List<Vector2Int> sheepMoveHistory = new List<Vector2Int>();
@@ -76,6 +77,7 @@ public class BoardManager : MonoBehaviour
     {
         if (IsWithinBounds(position))
         {
+            gameSoundManager.TapOnPieceSound();
             Transform tile = boardParent.GetChild(position.x * 8 + position.y);
             var tileImage = tile.GetComponent<UnityEngine.UI.Image>();
 
@@ -155,7 +157,6 @@ public class BoardManager : MonoBehaviour
     public void OnTileClicked(Vector2Int tilePosition)
     {
         if (gameOver || selectedPiece == null || !playerTurn) return;
-
         // Передаем третий параметр для проверки, овца это или нет
         if (IsMoveValid(selectedPiece.currentPosition, tilePosition, selectedPiece.isSheep))
         {

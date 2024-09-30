@@ -5,14 +5,30 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     private BoardManager boardManager;
-    private bool isPlayerTurn = true; // Если игрок ходит за овцу, то его ход начинается первым
+    private bool isPlayerTurn = true;
     private int currentWolfIndex = 0;
-    // Индекс для отслеживания текущего волка
+    [SerializeField] private GameObject _options;
+    [SerializeField] private GameObject _game;
+    private OptionsController _optionsController;
 
     private void Start()
     {
+        _optionsController = GetComponent<OptionsController>();
         boardManager = FindObjectOfType<BoardManager>();
         PlayerPrefs.SetString("ShouldShowLoadAndWelcome", "no");
+    }
+
+    public void OpenOptions()
+    {
+        _game.SetActive(false);
+        _options.SetActive(true);
+        _optionsController.HideShowBtn();
+    }
+
+    public void CloseOptions()
+    {
+        _options.SetActive(false);
+        _game.SetActive(true);
     }
 
     // Метод для выполнения хода компьютера (волков или овцы)

@@ -3672,7 +3672,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0013427734, y: -2000}
+  m_AnchoredPosition: {x: 0.0013427734, y: -2000.0002}
   m_SizeDelta: {x: 650, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1434419402
@@ -5198,10 +5198,11 @@ MonoBehaviour:
     of the game, the sheep and wolves are placed on opposite edges of the board,
     and the sheep moves first. The sheep's goal is to reach the opposite edge of
     the board, in which case it wins the game. The wolves win if they manage to surround
-    the sheep or trap it against the edge, making it unable to move.\n\nThe game
-    can be played against a robot, and at the start of the game, the user can choose
-    which side to play as: the sheep or the wolves. For each move made by the sheep,
-    the player earns 10 points, and for each move made by a wolf, they earn 5 points."
+    the sheep or trap it against the edge, making it unable to move.\n\nIn the game
+    with the computer, the player can choose which side to play as: the sheep or
+    the wolves. For each move as the sheep, the player earns 10 points, and for each
+    move as a wolf, they earn 5 points. Upon winning, the player advances to the
+    next level."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 116b4796d2c4240c9967b9c8e960e10f, type: 2}
   m_sharedMaterial: {fileID: -5214693218908901951, guid: 116b4796d2c4240c9967b9c8e960e10f, type: 2}
