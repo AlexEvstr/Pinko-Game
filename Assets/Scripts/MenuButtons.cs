@@ -9,6 +9,13 @@ public class MenuButtons : MonoBehaviour
     public GameObject _menu;
     public GameObject _options;
     public GameObject _tutorial;
+    private OptionsController _optionsController;
+    [SerializeField] private GameObject _content;
+
+    private void Start()
+    {
+        _optionsController = GetComponent<OptionsController>();
+    }
 
     public void CloseWelcome()
     {
@@ -25,6 +32,7 @@ public class MenuButtons : MonoBehaviour
     {
         _menu.SetActive(false);
         _options.SetActive(true);
+        _optionsController.HideShowBtn();
     }
 
     public void CloseOptions()
@@ -41,6 +49,7 @@ public class MenuButtons : MonoBehaviour
 
     public void CloseTutorial()
     {
+        _content.transform.position = new Vector2(_content.transform.position.x, 0);
         _tutorial.SetActive(false);
         _menu.SetActive(true);
     }

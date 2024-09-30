@@ -15,6 +15,8 @@ public class OptionsController : MonoBehaviour
     public AudioClip _offSwitchSound;
     private HapticFeedbackManager _hapticFeedbackManager;
     private int _vibration;
+    [SerializeField] private GameObject _backBtn;
+    [SerializeField] private GameObject _saveBtn;
 
     private void Start()
     {
@@ -32,8 +34,21 @@ public class OptionsController : MonoBehaviour
         else VibrationOff();
     }
 
+    private void ShowSaveBtn()
+    {
+        _backBtn.SetActive(false);
+        _saveBtn.SetActive(true);
+    }
+
+    public void HideShowBtn()
+    {
+        _saveBtn.SetActive(false);
+        _backBtn.SetActive(true);
+    }
+
     public void OffMusic()
     {
+        ShowSaveBtn();
         _musicOn.SetActive(false);
         _musicOff.SetActive(true);
         _music.volume = 0;
@@ -42,6 +57,7 @@ public class OptionsController : MonoBehaviour
 
     public void OnMusic()
     {
+        ShowSaveBtn();
         _musicOff.SetActive(false);
         _musicOn.SetActive(true);
         _music.volume = 1;
@@ -50,6 +66,7 @@ public class OptionsController : MonoBehaviour
 
     public void OffSounds()
     {
+        ShowSaveBtn();
         _soundsOn.SetActive(false);
         _soundsOff.SetActive(true);
         _sounds.volume = 0;
@@ -58,6 +75,7 @@ public class OptionsController : MonoBehaviour
 
     public void OnSounds()
     {
+        ShowSaveBtn();
         _soundsOff.SetActive(false);
         _soundsOn.SetActive(true);
         _sounds.volume = 1;
@@ -66,6 +84,7 @@ public class OptionsController : MonoBehaviour
 
     public void VibrationOff()
     {
+        ShowSaveBtn();
         _vibrationOn.SetActive(false);
         _vibrationOff.SetActive(true);
         _vibration = 0;
@@ -74,6 +93,7 @@ public class OptionsController : MonoBehaviour
 
     public void VibrationOn()
     {
+        ShowSaveBtn();
         _vibrationOff.SetActive(false);
         _vibrationOn.SetActive(true);
         _vibration = 1;
