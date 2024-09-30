@@ -31,7 +31,18 @@ public class MenuButtons : MonoBehaviour
     private IEnumerator WaitBeforePlay()
     {
         yield return new WaitForSeconds(0.5f);
-        SceneManager.LoadScene("GameScreen");
+        SceneManager.LoadScene("GameVsComputerScreen");
+    }
+
+    public void PressPlayGameVsPlayer()
+    {
+        StartCoroutine(WaitBeforePlay2());
+    }
+
+    private IEnumerator WaitBeforePlay2()
+    {
+        yield return new WaitForSeconds(0.5f);
+        SceneManager.LoadScene("GameVsPlayerScreen");
     }
 
     public void OpenOptions()
