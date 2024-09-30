@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,7 +16,7 @@ public class GameManager : MonoBehaviour
     {
         _optionsController = GetComponent<OptionsController>();
         boardManager = FindObjectOfType<BoardManager>();
-        PlayerPrefs.SetString("ShouldShowLoadAndWelcome", "no");
+        PlayerPrefs.SetString("ShouldShowLoadAndWelcome", "yes");
     }
 
     public void OpenOptions()
@@ -31,31 +32,25 @@ public class GameManager : MonoBehaviour
         _game.SetActive(true);
     }
 
-    // Метод для выполнения хода компьютера (волков или овцы)
     private void ExecuteComputerTurn()
     {
         if (boardManager.computerPlaysForSheep)
         {
-            // Если компьютер управляет овцой
             PerformSheepMove();
         }
         else
         {
-            // Если компьютер управляет волками, ходит только один волк
             PerformWolfMove();
         }
 
-        // После хода компьютера передаем ход игроку
         isPlayerTurn = true;
     }
 
-    // Метод для выполнения хода овцы
     private void PerformSheepMove()
     {
         PieceController sheep = boardManager.GetSheep();
         if (sheep == null) return;
 
-        // Логика для хода овцы
         List<Vector2Int> availableMoves = boardManager.GetHighlightedTiles(sheep);
         if (availableMoves.Count > 0)
         {
@@ -65,13 +60,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Метод для выполнения хода одного волка
     private void PerformWolfMove()
     {
         PieceController[] wolves = boardManager.GetWolves();
         if (wolves.Length == 0) return;
 
-        // Делаем ход только текущим волком
         PieceController currentWolf = wolves[currentWolfIndex];
         List<Vector2Int> availableMoves = boardManager.GetHighlightedTiles(currentWolf);
         if (availableMoves.Count > 0)
@@ -80,30 +73,39 @@ public class GameManager : MonoBehaviour
             boardManager.MovePiece(currentWolf, move);
         }
 
-        // Обновляем индекс волка для следующего хода
         currentWolfIndex = (currentWolfIndex + 1) % wolves.Length;
     }
 
-    // Вызывается каждый ход
     public void PlayerMove()
     {
         if (isPlayerTurn)
         {
-            // Игрок делает ход
             isPlayerTurn = false;
 
-            // После хода игрока передаем ход компьютеру
-            Invoke(nameof(ExecuteComputerTurn), 1f); // Добавим небольшую задержку для хода компьютера
+            Invoke(nameof(ExecuteComputerTurn), 1f);
         }
     }
 
     public void BackToMenu()
     {
+        StartCoroutine(WaitToBack());
+    }
+
+    private IEnumerator WaitToBack()
+    {
+        PlayerPrefs.SetString("ShouldShowLoadAndWelcome", "no");
+        yield return new WaitForSeconds(0.5f);
         SceneManager.LoadScene("MenuScreen");
     }
 
     public void RestartGame()
     {
+        StartCoroutine(WaitTOReload());
+    }
+
+    private IEnumerator WaitTOReload()
+    {
+        yield return new WaitForSeconds(0.5f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

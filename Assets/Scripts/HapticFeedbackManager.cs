@@ -16,7 +16,6 @@ public class HapticFeedbackManager : MonoBehaviour
     {
         if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
-            Debug.Log("Triggering Light Haptic Feedback");
             TriggerLightHaptic();
         }
     }

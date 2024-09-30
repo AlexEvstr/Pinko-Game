@@ -12,7 +12,7 @@ public class ProgressLoader : MonoBehaviour
 
     private float currentTime = 0f;
 
-    void Awake()
+    void Start()
     {
         string loadAndWelcome = PlayerPrefs.GetString("ShouldShowLoadAndWelcome", "yes");
         if (loadAndWelcome != "yes")

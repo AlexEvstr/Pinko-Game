@@ -10,6 +10,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject _losePanel;
     [SerializeField] private GameObject _selectionPanel;
     [SerializeField] private GameSoundManager gameSoundManager;
+    private LevelAndScoreController _levelAndScoreController;
     public bool playerIsSheep;
     public bool computerPlaysForSheep;
     public List<Vector2Int> sheepMoveHistory = new List<Vector2Int>();
@@ -25,6 +26,7 @@ public class BoardManager : MonoBehaviour
     {
         computerPlayer = FindObjectOfType<ComputerPlayer>();
         gameManager = FindObjectOfType<GameManager>();
+        _levelAndScoreController = GetComponent<LevelAndScoreController>();
 
         string choosePanel = PlayerPrefs.GetString("ShouldShowChoosePanel", "yes");
         if (choosePanel == "Sheep") OnSheepSelected();
@@ -47,7 +49,6 @@ public class BoardManager : MonoBehaviour
         Vector2Int currentPos = piece.currentPosition;
 
         List<Vector2Int> possibleMoves = new List<Vector2Int>();
-
         if (piece.isSheep)
         {
             // Овца может ходить по диагонали во все 4 направления
@@ -157,7 +158,6 @@ public class BoardManager : MonoBehaviour
     public void OnTileClicked(Vector2Int tilePosition)
     {
         if (gameOver || selectedPiece == null || !playerTurn) return;
-        // Передаем третий параметр для проверки, овца это или нет
         if (IsMoveValid(selectedPiece.currentPosition, tilePosition, selectedPiece.isSheep))
         {
             MovePiece(selectedPiece, tilePosition);
@@ -166,9 +166,14 @@ public class BoardManager : MonoBehaviour
             if (selectedPiece.isSheep && HasSheepReachedTop(selectedPiece))
             {
                 ShowWinPanel();
+                int level = PlayerPrefs.GetInt("CurrentLevel", 1);
+                level++;
+                PlayerPrefs.SetInt("CurrentLevel", level);
                 gameOver = true;
                 return;
             }
+            if (selectedPiece.isSheep) _levelAndScoreController.Plus10Score();
+            else _levelAndScoreController.Plus5Score();
 
             playerTurn = false;
             Invoke("InvokeComputerMove", 1f);
@@ -203,17 +208,14 @@ public class BoardManager : MonoBehaviour
             return false;
         }
 
-        // Проверяем, что ход диагональный
         if (!IsDiagonalMove(currentPos, targetPos))
         {
             Debug.Log($"Ход {currentPos} -> {targetPos} не является диагональным.");
             return false;
         }
 
-        // Проверка направления для волков (волки могут ходить только вперед)
         if (!isSheep)
         {
-            // Волки могут ходить только вверх (вперед)
             if (targetPos.x <= currentPos.x)
             {
                 Debug.Log("Волк не может двигаться назад.");
@@ -236,8 +238,6 @@ public class BoardManager : MonoBehaviour
 
         if (IsSheepBlocked())
         {
-            Debug.Log("11");
-            //ShowLosePanel();
             gameOver = true;
         }
 
@@ -290,10 +290,10 @@ public class BoardManager : MonoBehaviour
             var piece = tile.GetComponentInChildren<PieceController>();
             if (piece != null && !piece.isSheep)
             {
-                wolves.Add(piece); // Добавляем волка в список
+                wolves.Add(piece);
             }
         }
-        return wolves.ToArray(); // Возвращаем массив волков
+        return wolves.ToArray();
     }
 
 
@@ -304,7 +304,6 @@ public class BoardManager : MonoBehaviour
             Debug.LogError($"Позиция {newPosition} выходит за пределы доски.");
             return;
         }
-
         Transform newTile = boardParent.GetChild(newPosition.x * 8 + newPosition.y);
         piece.MoveToTile(newTile);
         piece.currentPosition = newPosition;
@@ -363,46 +362,41 @@ public class BoardManager : MonoBehaviour
         computerPlaysForSheep = false;
         gameManager.PlayerMove();
 
-        // Теперь нужно отключить одного волка, если игрок выбрал овцу
         if (computerPlaysForSheep)
         {
             DisableOneWolf();
         }
         PlayerPrefs.SetString("ShouldShowChoosePanel", "Sheep");
-        HideSelectionPanel(); // Закрываем панель с выбором
+        HideSelectionPanel();
     }
 
-    // Когда игрок выбирает волков
     public void OnWolvesSelected()
     {
         playerIsSheep = false;
         computerPlaysForSheep = true;
         gameManager.PlayerMove();
 
-        // Отключаем одного волка, так как компьютер играет за овцу
         if (computerPlaysForSheep)
         {
             DisableOneWolf();
         }
         PlayerPrefs.SetString("ShouldShowChoosePanel", "Wolf");
-        HideSelectionPanel(); // Закрываем панель с выбором
+        HideSelectionPanel();
     }
 
     private void DisableOneWolf()
     {
         PieceController[] wolves = GetWolves();
-        if (wolves.Length > 3) // Проверяем, что волков больше трёх
+        if (wolves.Length > 3)
         {
-            PieceController wolfToDisable = wolves[3]; // Отключаем 4-го волка
+            PieceController wolfToDisable = wolves[3];
             wolfToDisable.gameObject.SetActive(false);
-            Debug.Log("Четвертый волк отключен для облегчения игры.");
         }
     }
 
-
     public void HideSelectionPanel()
-{
-    _selectionPanel.SetActive(false); // Скрываем панель выбора
-}
+    {
+        _selectionPanel.SetActive(false);
+    }
 
 }

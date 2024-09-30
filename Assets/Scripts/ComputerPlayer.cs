@@ -86,18 +86,18 @@ public class ComputerPlayer : MonoBehaviour
         if (bestMove != sheepPosition)
         {
             boardManager.MovePiece(sheep, bestMove);
-            Debug.Log($"Овца переместилась на {bestMove}");
 
             if (boardManager.HasSheepReachedTop(sheep))
             {
-                Debug.Log("2");
                 _losePanel.SetActive(true);
             }
         }
         else
         {
-            Debug.Log("1");
             _winPanel.SetActive(true);
+            int level = PlayerPrefs.GetInt("CurrentLevel", 1);
+            level++;
+            PlayerPrefs.SetInt("CurrentLevel", level);
         }
 
         boardManager.ResetHighlights();
@@ -335,7 +335,6 @@ public class ComputerPlayer : MonoBehaviour
         {
             boardManager.MovePiece(selectedWolf, bestWolfMove);
 
-            // Проверяем, заблокирована ли овца
             if (IsSheepBlocked(boardManager.GetSheep()))
             {
                 _losePanel.SetActive(true);
@@ -345,12 +344,10 @@ public class ComputerPlayer : MonoBehaviour
         boardManager.ResetHighlights();
     }
 
-    // Метод для проверки, заблокирована ли овца
     private bool IsSheepBlocked(PieceController sheep)
     {
         List<Vector2Int> sheepMoves = boardManager.GetHighlightedTiles(sheep);
 
-        // Если нет доступных ходов для овцы, то она заблокирована
         return sheepMoves.Count == 0;
     }
 

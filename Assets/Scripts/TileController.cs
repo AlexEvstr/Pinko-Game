@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 public class TileController : MonoBehaviour, IPointerClickHandler
 {
-    public Vector2Int tilePosition; // Координаты клетки на доске
+    public Vector2Int tilePosition;
     private BoardManager boardManager;
 
     private void Start()
@@ -11,10 +11,8 @@ public class TileController : MonoBehaviour, IPointerClickHandler
         boardManager = FindObjectOfType<BoardManager>();
     }
 
-    // Обрабатываем клики по клетке
     public void OnPointerClick(PointerEventData eventData)
     {
-        // Сообщаем BoardManager, что клетка была нажата
         boardManager.OnTileClicked(tilePosition);
     }
 }

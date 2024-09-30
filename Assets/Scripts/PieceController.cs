@@ -3,8 +3,8 @@ using UnityEngine.EventSystems;
 
 public class PieceController : MonoBehaviour, IPointerClickHandler
 {
-    public Vector2Int currentPosition; // Текущая позиция фигуры
-    public bool isSheep; // Это овца или волк?
+    public Vector2Int currentPosition;
+    public bool isSheep;
     [SerializeField] private GameSoundManager gameSoundManager;
 
     private BoardManager boardManager;
@@ -16,19 +16,16 @@ public class PieceController : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        boardManager.SelectPiece(this); // Передаем текущую фигуру в BoardManager
+        boardManager.SelectPiece(this);
     }
 
     public void MoveToTile(Transform newTile)
     {
         gameSoundManager.PlayMoveSound();
-        // Меняем родителя на новую клетку
         transform.SetParent(newTile);
 
-        // Обновляем позицию
-        transform.localPosition = Vector3.zero; // Центрируем фигуру внутри клетки
+        transform.localPosition = Vector3.zero;
 
-        // Обновляем текущую позицию
         currentPosition = newTile.GetComponent<TileController>().tilePosition; // Обновляем позицию на основе нового родителя
     }
 }
