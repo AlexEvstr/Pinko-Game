@@ -1991,7 +1991,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 400}
+  m_AnchoredPosition: {x: 0, y: 500}
   m_SizeDelta: {x: 900, y: 275}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &726078785
@@ -4121,8 +4121,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0013428, y: 0.011307}
-  m_SizeDelta: {x: 1291, y: 2793.8}
+  m_AnchoredPosition: {x: -0.0013428, y: 135.1}
+  m_SizeDelta: {x: 1291, y: 2523.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1549231159
 MonoBehaviour:
@@ -5718,6 +5718,7 @@ GameObject:
   - component: {fileID: 2051775553}
   - component: {fileID: 2051775554}
   - component: {fileID: 2051775555}
+  - component: {fileID: 2051775556}
   m_Layer: 0
   m_Name: GameEnter
   m_TagString: Untagged
@@ -5810,6 +5811,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb35398e01dff4a2babaee5a27bcf0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2051775556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051775550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47c156ef33f944c8587ad95eaf490ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bannerPosition: 4
+  androidGameId: 5706241
+  iosGameId: 5706240
+  androidAdUnitId: Banner_Android
+  iosAdUnitId: Banner_iOS
 --- !u!1 &2138698618
 GameObject:
   m_ObjectHideFlags: 0
